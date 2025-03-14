@@ -1373,11 +1373,11 @@ public class ClientEventHandler implements ISelectiveResourceReloadListener
 			}
 			EntityPlayer p = ClientUtils.mc().player;
 
-			ItemStack mainItem = p.getHeldItemMainhand();
-			ItemStack offItem = p.getHeldItemOffhand();
+			ItemStack mainItem = p!=null?p.getHeldItemMainhand():null;
+			ItemStack offItem = p!=null?p.getHeldItemOffhand():null;
 
-			boolean main = !mainItem.isEmpty()&&mainItem.getItem()==IEContent.itemTool&&mainItem.getItemDamage()==3;
-			boolean off = !offItem.isEmpty()&&offItem.getItem()==IEContent.itemTool&&offItem.getItemDamage()==3;
+			boolean main = mainItem!=null&&!mainItem.isEmpty()&&mainItem.getItem()==IEContent.itemTool&&mainItem.getItemDamage()==3;
+			boolean off = offItem!=null&&!offItem.isEmpty()&&offItem.getItem()==IEContent.itemTool&&offItem.getItemDamage()==3;
 			ItemStack target = main?mainItem: offItem;
 
 			if(main||off)

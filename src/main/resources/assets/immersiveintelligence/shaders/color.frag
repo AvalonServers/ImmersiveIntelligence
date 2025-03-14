@@ -1,4 +1,4 @@
-#version 130
+#version 120
 
 //Author: Pabilo8
 //RGB color shader
@@ -7,5 +7,5 @@ uniform sampler2D bgl_RenderedTexture;
 
 void main()
 {
-    gl_FragColor = texture2D(bgl_RenderedTexture, vec2(gl_TexCoord[0])) * gl_Color * vec4(color.xyz,1.0);
+    gl_FragColor = texture2D(bgl_RenderedTexture, gl_TexCoord[0].st) * gl_Color * vec4(color.xyz,1.0);
 }

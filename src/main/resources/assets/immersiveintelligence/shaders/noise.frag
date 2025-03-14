@@ -1,16 +1,16 @@
-#version 130
+#version 120
 
 uniform float time;
-uniform sampler2D bgl_RenderedTexture;
+uniform sampler2D texture;
 
 float noise(in vec2 coordinate, in float seed)
 {
-    vec2 coordActual = floor(textureSize(bgl_RenderedTexture, 0) * coordinate);
+    vec2 coordActual = floor(coordinate * vec2(textureSize2D(texture)));
     return fract(sin(dot(coordActual*seed, vec2(12.9898, 78.233)))*43758.5453);
 }
 
 void main()
 {
-    float n = (noise(vec2(gl_TexCoord[0]), time) - 0.5) * 0.25;
-    gl_FragColor = texture2D(bgl_RenderedTexture, vec2(gl_TexCoord[0])) * gl_Color * vec4(1-n, 1-n, 1-n, 1);
+    float n = (noise(gl_TexCoord[0].st, time) - 0.5) * 0.25;
+    gl_FragColor = texture2D(texture, gl_TexCoord[0].st) * gl_Color * vec4(1-n, 1-n, 1-n, 1);
 }

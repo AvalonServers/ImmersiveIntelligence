@@ -59,6 +59,8 @@ public class AMTParticle extends AMT
 	 */
 	public <T extends AbstractParticle> AMTParticle setParticle(ParticleFactory<T> particleFactory, Consumer<ParticleFactory<T>> additionalOptions)
 	{
+		if (particleFactory == null) return this;
+
 		additionalOptions.accept(particleFactory);
 		this.particle = particleFactory.create(Vec3d.ZERO, Vec3d.ZERO, 0, 0);
 //		this.particle.enableAMTDrawMode();

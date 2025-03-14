@@ -429,7 +429,7 @@ public class TileEntityChemicalBath extends TileEntityMultiblockMetal<TileEntity
 		if(capability==CapabilityItemHandler.ITEM_HANDLER_CAPABILITY&&pos==0)
 		{
 			TileEntityChemicalBath master = master();
-			return (T)master.insertionHandler;
+			if (master != null && master.insertionHandler != null) return (T) master.insertionHandler;
 		}
 
 		return super.getCapability(capability, facing);

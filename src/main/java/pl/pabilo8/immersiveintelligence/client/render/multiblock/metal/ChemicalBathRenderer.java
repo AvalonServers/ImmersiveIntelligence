@@ -25,7 +25,6 @@ import javax.annotation.Nullable;
  */
 public class ChemicalBathRenderer extends TileEntitySpecialRenderer<TileEntityChemicalBath> implements IReloadableModelContainer<ChemicalBathRenderer>
 {
-	static RenderItem renderItem = ClientUtils.mc().getRenderItem();
 	private static ModelChemicalBath model;
 	private static ModelChemicalBath modelFlipped;
 	private static final String TEXTURE = ImmersiveIntelligence.MODID+":textures/blocks/multiblock/chemical_bath.png";
@@ -159,6 +158,8 @@ public class ChemicalBathRenderer extends TileEntitySpecialRenderer<TileEntityCh
 
 			if(picking!=1)
 			{
+				RenderItem renderItem = ClientUtils.mc().getRenderItem();
+
 				if(itemAnimation==0)
 				{
 					GlStateManager.pushMatrix();
@@ -167,7 +168,8 @@ public class ChemicalBathRenderer extends TileEntitySpecialRenderer<TileEntityCh
 						GlStateManager.rotate(90f, 1f, 0f, 0f);
 						GlStateManager.translate(2.375f-picking, -0.5f*mirrorMod, -0.5f);
 
-						renderItem.renderItem(te.inventory.get(0), TransformType.GROUND);
+						if (renderItem != null)
+							renderItem.renderItem(te.inventory.get(0), TransformType.GROUND);
 					}
 					GlStateManager.popMatrix();
 				}
@@ -178,8 +180,9 @@ public class ChemicalBathRenderer extends TileEntitySpecialRenderer<TileEntityCh
 					{
 						GlStateManager.rotate(90f, 1f, 0f, 0f);
 						GlStateManager.translate(1.375f+picking, -4.5f*mirrorMod, -0.625f);
-
-						renderItem.renderItem(te.effect, TransformType.GROUND);
+						
+						if (renderItem != null)
+							renderItem.renderItem(te.effect, TransformType.GROUND);
 					}
 					GlStateManager.popMatrix();
 				}

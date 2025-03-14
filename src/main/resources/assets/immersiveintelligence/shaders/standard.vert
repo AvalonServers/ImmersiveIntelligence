@@ -1,7 +1,5 @@
 #version 120
 
-// From TTFTCUTS, thanks TTFTCUTS!
-
 varying vec3 position;
 
 void main()

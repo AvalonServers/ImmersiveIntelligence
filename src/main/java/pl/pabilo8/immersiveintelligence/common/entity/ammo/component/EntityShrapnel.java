@@ -95,12 +95,11 @@ public class EntityShrapnel extends EntityIEProjectile implements IEntityLightEv
 	@Override
 	public void onImpact(RayTraceResult mop)
 	{
-		if(!this.world.isRemote&&ShrapnelHandler.registry.get(shrapnel)!=null)
+		if(!this.world.isRemote&&shrapnel!=null)
 		{
-			Shrapnel s = ShrapnelHandler.registry.get(shrapnel);
 			if(mop.entityHit!=null)
 			{
-				mop.entityHit.attackEntityFrom(causeShrapnelDamage(this, shootingEntity, mop.entityHit), s.damage);
+				mop.entityHit.attackEntityFrom(causeShrapnelDamage(this, shootingEntity, mop.entityHit), shrapnel.damage);
 				mop.entityHit.hurtResistantTime *= .5;
 				if(this.isBurning())
 				{
@@ -123,10 +122,9 @@ public class EntityShrapnel extends EntityIEProjectile implements IEntityLightEv
 	@Optional.Method(modid = "mirage")
 	public void gatherLights(GatherLightsEvent evt, Entity entity)
 	{
-		Shrapnel s = ShrapnelHandler.registry.get(shrapnel);
-		if(s==null)
+		if(shrapnel==null)
 			return;
-		int light = this.isBurning()?15: Math.round(s.brightness*15f);
+		int light = this.isBurning()?15: Math.round(shrapnel.brightness*15f);
 
 		if(light > 0)
 			evt.add(Light.builder()
@@ -142,10 +140,9 @@ public class EntityShrapnel extends EntityIEProjectile implements IEntityLightEv
 	@SideOnly(Side.CLIENT)
 	public int getBrightnessForRender()
 	{
-		Shrapnel s = ShrapnelHandler.registry.get(shrapnel);
-		if(s!=null)
+		if(shrapnel!=null)
 		{
-			int light = this.isBurning()?15: Math.round(s.brightness*15f);
+			int light = this.isBurning()?15: Math.round(shrapnel.brightness*15f);
 			int superBrightness = super.getBrightnessForRender();
 			light = (superBrightness&(0xff<<20))|(light<<4);
 			if(light > 0)
@@ -160,10 +157,9 @@ public class EntityShrapnel extends EntityIEProjectile implements IEntityLightEv
 	@Override
 	public float getBrightness()
 	{
-		Shrapnel s = ShrapnelHandler.registry.get(shrapnel);
-		if(s!=null)
+		if(shrapnel!=null)
 		{
-			int light = this.isBurning()?15: Math.round(s.brightness*15f);
+			int light = this.isBurning()?15: Math.round(shrapnel.brightness*15f);
 			if(light > 0)
 				return Math.max(light, super.getBrightness());
 		}

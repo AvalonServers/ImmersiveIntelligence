@@ -127,55 +127,58 @@ public class TileEntitySawmill extends TileEntityMultiblockProductionSingle<Tile
 	{
 		vise.update();
 
-		boolean receivesPower = false;
+		if (!world.isRemote) {
+			boolean receivesPower = false;
 
-		// Self destruct
-		if(rotation.getRotationSpeed() > Sawmill.rpmBreakingMax||rotation.getTorque() > Sawmill.torqueBreakingMax)
-		{
-			selfDestruct();
-			return;
-		}
-
-		// Wheel or mechanical device connected to multiblock
-		TileEntity te = world.getTileEntity(getPOIPos(MultiblockPOI.ROTARY_INPUT).offset(facing));
-
-		if(te!=null&&te.hasCapability(CapabilityRotaryEnergy.ROTARY_ENERGY, facing.getOpposite()))
-		{
-			// Increase internal rotation if powered
-			IRotaryEnergy cap = te.getCapability(CapabilityRotaryEnergy.ROTARY_ENERGY, facing.getOpposite());
-			assert cap!=null;
-			if(rotation.handleRotation(cap, facing.getOpposite()))
+			// Self destruct
+			if(rotation.getRotationSpeed() > Sawmill.rpmBreakingMax||rotation.getTorque() > Sawmill.torqueBreakingMax)
 			{
-				IIPacketHandler.INSTANCE.sendToAllAround(new MessageRotaryPowerSync(rotation, 0, getPos()), IIPacketHandler.targetPointFromTile(this, 24));
-				receivesPower = true;
-			}
-		}
-
-		if(rotation.getTorque() > 0||rotation.getRotationSpeed() > 0)
-		{
-			// Decrease internal rotation if not powered
-			if(!receivesPower)
-			{
-				rotation.grow(0, 0, 0.98f);
-				IIPacketHandler.INSTANCE.sendToAllAround(new MessageRotaryPowerSync(rotation, 0, getPos()), IIPacketHandler.targetPointFromTile(this, 24));
+				selfDestruct();
+				return;
 			}
 
-			// Hurt entities stepping on sawblade
-			ItemStack sawStack = inventory.get(SLOT_SAWBLADE);
+			// Wheel or mechanical device connected to multiblock
+			TileEntity te = world.getTileEntity(getPOIPos(MultiblockPOI.ROTARY_INPUT).offset(facing));
 
-			if(sawStack.getItem() instanceof ISawblade)
+			if(te!=null&&te.hasCapability(CapabilityRotaryEnergy.ROTARY_ENERGY, facing.getOpposite()))
 			{
-				if(world.getTotalWorldTime()%Math.ceil(3-MathHelper.clamp(rotation.getRotationSpeed()/360f, 0, 2))==0)
+				// Increase internal rotation if powered
+				IRotaryEnergy cap = te.getCapability(CapabilityRotaryEnergy.ROTARY_ENERGY, facing.getOpposite());
+				assert cap!=null;
+				if(rotation.handleRotation(cap, facing.getOpposite()))
 				{
-					int hardness = ((ISawblade)sawStack.getItem()).getHardness(sawStack)*2;
-					Vec3i v = facing.getDirectionVec();
-					List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class,
-							new AxisAlignedBB(getBlockPosForPos(2).offset(EnumFacing.UP)).offset(v.getX()*0.5, v.getY()*0.5, v.getZ()*0.5));
-					for(EntityLivingBase l : entities)
-						l.attackEntityFrom(IIDamageSources.SAWMILL_DAMAGE, hardness);
+					IIPacketHandler.INSTANCE.sendToAllAround(new MessageRotaryPowerSync(rotation, 0, getPos()), IIPacketHandler.targetPointFromTile(this, 24));
+					receivesPower = true;
+				}
+			}
+
+			if(rotation.getTorque() > 0||rotation.getRotationSpeed() > 0)
+			{
+				// Decrease internal rotation if not powered
+				if(!receivesPower)
+				{
+					rotation.grow(0, 0, 0.98f);
+					IIPacketHandler.INSTANCE.sendToAllAround(new MessageRotaryPowerSync(rotation, 0, getPos()), IIPacketHandler.targetPointFromTile(this, 24));
+				}
+
+				// Hurt entities stepping on sawblade
+				ItemStack sawStack = inventory.get(SLOT_SAWBLADE);
+
+				if(sawStack.getItem() instanceof ISawblade)
+				{
+					if(world.getTotalWorldTime()%Math.ceil(3-MathHelper.clamp(rotation.getRotationSpeed()/360f, 0, 2))==0)
+					{
+						int hardness = ((ISawblade)sawStack.getItem()).getHardness(sawStack)*2;
+						Vec3i v = facing.getDirectionVec();
+						List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class,
+								new AxisAlignedBB(getBlockPosForPos(2).offset(EnumFacing.UP)).offset(v.getX()*0.5, v.getY()*0.5, v.getZ()*0.5));
+						for(EntityLivingBase l : entities)
+							l.attackEntityFrom(IIDamageSources.SAWMILL_DAMAGE, hardness);
+					}
 				}
 			}
 		}
+
 		super.onUpdate();
 
 		//TODO: 30.07.2024 proper particle implementation
